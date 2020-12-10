@@ -1,5 +1,8 @@
 # custom-social-network
 Social network web app for software engineering discipline project
+
+#### A flask-javascript implemented social network
+
 ### Login page
 ![login](https://user-images.githubusercontent.com/53539227/101841989-dba84980-3b25-11eb-9bbb-bcfc78e94e52.png)
 ### Register page
