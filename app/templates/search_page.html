@@ -1,0 +1,21 @@
+{% extends "base_profile.html" %}
+{% block head %}
+
+<head>
+
+    <script>
+        const local_id = localStorage.getItem('id');
+        
+    </script>
+
+</head>
+
+{% endblock %}
+
+{% block content %}
+
+{% for name in names %}
+    <p style="color:white;"> {{name.first_name}} </p>
+{% endfor %}
+
+{% endblock %}

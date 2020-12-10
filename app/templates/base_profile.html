@@ -1,0 +1,117 @@
+<html>
+
+<head>
+
+    <title>Wellcome {{form.username}}</title>
+   <!--Made with love by Mutiullah Samim -->
+   
+	<!--Bootsrap 4 CDN-->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <!--Fontawesome CDN-->
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js">	</script>
+
+    <script src="https://code.iconify.design/1/1.0.7/iconify.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='profile.css') }}">
+
+    {% block head %} {% endblock %}
+
+    <style>
+        body{
+            background-image: url('http://getwallpapers.com/wallpaper/full/3/5/7/170948.jpg');
+            background-size: cover;
+            background-repeat: repeat-y;
+            height: 100%;
+        }
+
+
+        #searchBox{
+            float: right;
+        }
+
+        .btn-primary{
+            border-radius: 15px 15px 15px 15px;
+        }
+
+        #notificatioButton{
+            float: left;
+            position: relative;
+            right: 400px;
+        }
+        
+        .footer-copyright{
+            background-color: rgb(34, 36, 37);
+            color: white;
+        }
+
+        #bootFooter{
+            color: white;
+        }
+
+    </style>
+
+    <script>
+        $(document).ready(function(){
+            $("#dropdownButton").click(function(){
+                if ($(".dropdown-menu").css("display") == "none"){
+                    $(".dropdown-menu").css("display", "block");
+                } else if($(".dropdown-menu").css("display") == "block"){
+                    $(".dropdown-menu").css("display", "none");
+                }
+            });
+        });
+
+
+
+    </script>
+
+</head>
+
+<body>
+    
+    <nav class="nav navbar navbar-dark bg-dark flex-row">
+
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownButton">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href="#">Home</a>
+                <a class="dropdown-item" href="#">Friendlist</a>
+                <a class="dropdown-item" href="#">Configurations</a>
+            </div>
+        </div>
+
+        <button class="btn btn-secondary" type="button" id="notificatioButton">
+            <span class="iconify" data-icon="bi-alarm" data-inline="false"></span>
+        </button>
+
+        <form class="form-inline mt-3" id = 'searchBox'>
+            <input class="form-control mr-sm-2" type="search"
+            placeholder="Search" aria-label="Search" id='searchInput'>
+            <button class="btn btn-outline-success my-2 my-sm-0" 
+                    id = "searchButton" type="submit">Search</button>
+        </form>
+    </nav>
+
+    {% block content %} {% endblock %}
+        
+    </div>
+    
+</body>
+
+<!-- Footer -->
+<footer class="page-footer font-small blue">
+
+    <!-- Copyright -->
+    <div class="footer-copyright text-center py-3">© 2020 Copyright:
+      <a id = "bootFooter"href="https://mdbootstrap.com/"> MDBootstrap.com</a>
+    </div>
+    <!-- Copyright -->
+  
+</footer>
+<!-- Footer -->
+
+</html>

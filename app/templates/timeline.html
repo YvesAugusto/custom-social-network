@@ -1,0 +1,176 @@
+{% extends "base_profile.html" %}
+
+{% block head %}
+
+    <style>
+        ul.timeline {
+            list-style-type: none;
+            position: relative;
+        }
+        ul.timeline:before {
+            content: ' ';
+            background: #d4d9df;
+            display: inline-block;
+            position: absolute;
+            left: 29px;
+            width: 2px;
+            height: 100%;
+            z-index: 400;
+        }
+        ul.timeline > li {
+            margin: 20px 0;
+            padding-left: 20px;
+        }
+        ul.timeline > li:before {
+            content: ' ';
+            background: white;
+            display: inline-block;
+            position: absolute;
+            border-radius: 50%;
+            border: 3px solid #22c0e8;
+            left: 20px;
+            width: 20px;
+            height: 20px;
+            z-index: 400;
+        }
+
+        .row_post{
+            padding-bottom: 50px;
+        }
+        
+        .row_timeline{
+            align-items: center;
+        }
+    </style>
+
+    <script>
+        const local_id = localStorage.getItem('id');
+        $(document).ready(function(){
+            $("#publishButton").click(function(){
+                $.ajax({
+                    data:{
+                        title: $("#postTitle").val(),
+                        content: $("#postContent").val()
+                    },
+                    type:'POST',
+                    url:'/profile/'+local_id+'/post'
+                }).done(function(data){
+                    if (data.error){
+                        $("#postTitle").val("");
+                        $("#postContent").val("");
+                        window.location.href = '/profile/'+ local_id
+                    }
+                });
+            });
+
+            $("#searchButton").click(function(event){
+                $.ajax({
+                    data:{
+                        name: $("#searchInput").val()
+                    },
+                    type: 'POST',
+                    url: '/profile/'+local_id
+                }).done(function(data){
+                    block="<div>" + data.search + "</div>"
+                    document.getElementById("searchBox").innerHTML = block
+                });
+                event.preventDefault();
+            });
+        });
+
+
+
+    </script>
+
+{% endblock %}
+
+{% block content %} 
+<div class="container mt-5 mb-8">
+    <div class="row row_post justify-content-center">
+        <div class="card gedf-card" style="width: 60%;">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" id="myTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="posts-tab" data-toggle="tab" href="" role="tab" aria-controls="posts" aria-selected="true">
+                            Publique algo
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="posts" role="tabpanel" aria-labelledby="posts-tab">
+                        <div class="form-group">
+                            <label class="sr-only" for="message">post</label>
+                            <input type="text" class="form-control" placeholder="Titulo do post" id="postTitle"></input>
+                            <textarea class="form-control" id="postContent" 
+                            rows="3" placeholder="No que você está pensando?"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <button type="submit" class="btn btn-primary" id="publishButton"
+                style="margin-bottom: 20px;">Publicar</button>
+            </div>
+        </div>
+        
+    </div>
+    <div class="row">
+        <div class="col-2"></div>
+        <div class="col-8 row_timeline justify-content-center">
+            <h4 style="color: white;">Latest Publications</h4>
+            {% for post in posts %}
+            <div class="card gedf-card m-4">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="mr-2">
+                                <img class="rounded-circle" width="45" src="" alt="">
+                            </div>
+                            <div class="ml-2">
+                                <div class="h5 m-0">@{{form.nickname}}</div>
+                                <div class="h7 text-muted">{{form.username}}</div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="dropdown">
+                                <button class="btn btn-link dropdown-toggle" type="button" id="gedf-drop1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa fa-ellipsis-h"></i>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="gedf-drop1">
+                                    <div class="h6 dropdown-header">Configuration</div>
+                                    <a class="dropdown-item" href="#">Save</a>
+                                    <a class="dropdown-item" href="#">Hide</a>
+                                    <a class="dropdown-item" href="#">Report</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="card-body">
+                    <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i>10 min ago</div>
+                    <a class="card-link" href="#">
+                        <h5 class="card-title">{{post.title}}</h5>
+                    </a>
+
+                    <p class="card-text">
+                        {{post.content}}
+                    </p>
+                </div>
+                <div class="card-footer">
+                    <a href="#" class="card-link"><i class="fa fa-gittip"></i> Like</a>
+                    <a href="#" class="card-link"><i class="fa fa-comment"></i> Comment</a>
+                    <a href="#" class="card-link"><i class="fa fa-mail-forward"></i> Share</a>
+                </div>
+
+            </div>
+            {% endfor %}
+        </div>
+        <div col-2></div>
+    </div>
+</div>
+{% endblock %}
