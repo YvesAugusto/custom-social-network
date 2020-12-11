@@ -3,9 +3,20 @@
 
 <head>
 
+    <style>
+        #friendlistDiv{
+            display: block;
+        }
+    </style>
+
     <script>
         const local_id = localStorage.getItem('id');
-        
+        $(document).ready(function(){
+            $('#backButton').click(function(e){
+                window.location.href = '/profile/'+local_id
+                e.preventDefault();
+            })
+        })
     </script>
 
 </head>
@@ -13,9 +24,47 @@
 {% endblock %}
 
 {% block content %}
+<div class="card gedf-card" style="width: 100%%;">
+    <div class="card-header">
+        <ul class="nav nav-tabs card-header-tabs" id="myTab" role="tablist">
+            <li class="nav-item" style="display: inline;">
+                <a class="nav-link active" id="posts-tab" data-toggle="tab" href="" role="tab" aria-controls="posts" aria-selected="true">
+                    Search someone
+                </a>
+            </li>
+            <form class="form-group" method="GET" action="search">
+                    <input class="nav-item" type='text' name="first_name" style="height: 38px;"> </input>
+                    <button class="btn btn-outline-dark my-2 my-sm-0" id="searchPeople"> Search </button>
+            </form>
+        </ul>
+    </div>
+    <div class="card-body">
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="posts" role="tabpanel" aria-labelledby="posts-tab">
+                <div id = "searchDiv">
+                    {% if form.users %}
+                    {% for user in form.users %}
+                    <div class="card-header"> 
+                        <div class="h5 m-0"> {{user.first_name}} {{user.last_name}} </div>    
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-outline-success my-2 my-sm-0" 
+                            id = "unmakeButton"> Make friendship </button>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                    
+                </div>
+                
 
-{% for name in names %}
-    <p style="color:white;"> {{name.first_name}} </p>
-{% endfor %}
 
+            </div>
+        </div>
+    </div>
+
+    <div class="card-footer">
+        <button type="submit" class="btn btn-primary" id="backButton"
+        style="margin-bottom: 20px;">Voltar</button>
+    </div>
+</div>
 {% endblock %}

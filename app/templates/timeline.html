@@ -64,16 +64,7 @@
             });
 
             $("#searchButton").click(function(event){
-                $.ajax({
-                    data:{
-                        name: $("#searchInput").val()
-                    },
-                    type: 'POST',
-                    url: '/profile/'+local_id
-                }).done(function(data){
-                    block="<div>" + data.search + "</div>"
-                    document.getElementById("searchBox").innerHTML = block
-                });
+                window.location.href='/profile/'+local_id+'/search';
                 event.preventDefault();
             });
         });

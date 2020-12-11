@@ -1,5 +1,5 @@
 from app import app, db
-from flask import render_template
+from flask import render_template, redirect, url_for
 from flask import request, jsonify
 from .validators import *
 from .models import Usuario, Post, Timeline
@@ -39,25 +39,9 @@ def login_controller():
 def profile(id):
     usuario = Usuario.query.filter_by(id=id).first()
     posts= Post.query.filter_by(user_id=usuario.id).all()
-    first_name = ""
-    if len(request.form) > 0:
-        searched_name = request.form['name']
-        usuarios = Usuario.query.filter_by(first_name=searched_name).all()
-        first_name = Usuario.query.filter_by(id = id).first().first_name
-
-    return render_template("timeline.html", 
+    return render_template("timeline.html", posts=posts,
                             form={'username': usuario.first_name + " " + usuario.last_name,
-                                  'nickname': usuario.first_name + usuario.last_name}, 
-                            posts=posts, search={'name':first_name})
-
-@app.route('/profile/<id>/search', methods=['POST', 'GET'])
-def search_method(id):
-
-    if request.method == 'POST':
-        searched_name = request.form['name']
-        usuarios = Usuario.query.filter_by(first_name=searched_name).all()
-        first_name = Usuario.query.filter_by(id = id).first().first_name
-        return {'names':usuarios}
+                                'nickname': usuario.first_name + usuario.last_name})
 
 @app.route('/enroll/user', methods=['GET', 'POST'])
 def enroll_user():
@@ -83,3 +67,21 @@ def enroll_user():
 @app.route('/enroll', methods = ['GET'])
 def enroll_page():
     return render_template("enroll.html")
+
+@app.route('/profile/<id>/search')
+def search(id):
+    if request.method == 'GET':
+        usuarios = Usuario.query.filter_by(first_name=request.args.get('first_name')).all()
+    else:
+        usuarios = []
+    form={'username':Usuario.query.filter_by(id=id).first().first_name,
+          'users': usuarios}
+    return render_template('search_page.html', form=form)
+
+@app.route('/views/<id>/usuario')
+def view_usuario():
+    usuarios = Post.query.whoosh_search(request.args.get('query')).all()
+    form={'username':Usuario.query.filter_by(id=id).first().first_name,
+          'users': usuarios}
+    print(usuarios)
+    return render_template('search_page.html', form=form)

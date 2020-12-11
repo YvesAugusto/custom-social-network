@@ -63,8 +63,6 @@
             });
         });
 
-
-
     </script>
 
 </head>
@@ -89,12 +87,17 @@
         </button>
 
         <form class="form-inline mt-3" id = 'searchBox'>
-            <input class="form-control mr-sm-2" type="search"
-            placeholder="Search" aria-label="Search" id='searchInput'>
             <button class="btn btn-outline-success my-2 my-sm-0" 
-                    id = "searchButton" type="submit">Search</button>
+                    id = "searchButton" data-toggle="collapse" data-target="#searchCollapse" 
+                    aria-expanded="false" aria-controls="searchCollapse">Search</button>
         </form>
-    </nav>
+        <div class="card gedf-card collapse" id = "searchCollapse">
+            <h4> Search results </h4>
+            <div class="card card-body">
+
+            </div>
+        </div>
+    </nav>  
 
     {% block content %} {% endblock %}
         

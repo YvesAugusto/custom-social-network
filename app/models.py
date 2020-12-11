@@ -1,6 +1,7 @@
-from app import db
-
+from app import db, app
+import flask_whooshalchemyplus as wa
 class Usuario(db.Model):
+    __searchable__ = ['first_name', 'last_name', 'id', 'email']
     __tablename__  = 'usuario'
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(16))
@@ -51,6 +52,8 @@ class Post(db.Model):
     
     def comment(self, commentary):
         self.comments.append(commentary)
+
+wa.whoosh_index(app, Usuario)
 
 class Timeline(db.Model):
     __tablename__='timeline'
