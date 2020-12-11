@@ -15,8 +15,29 @@
             $('#backButton').click(function(e){
                 window.location.href = '/profile/'+local_id
                 e.preventDefault();
-            })
+            });
+
+            $(".inviteButtons").click(function(event){
+                var id_target = event.target.id;
+                console.log(event.target.id);
+                alert(id_target);
+                $.ajax({
+                    data: {
+                        id: id_target,
+                    },
+                    type: 'POST',
+                    url: '/controller/'+local_id+'/inviteFriend'
+                }).done(function(data){
+                    if(data.error){
+                        alert(data.error);
+                    }
+                });
+                event.preventDefault();
+            });
+
         })
+
+        
     </script>
 
 </head>
@@ -24,7 +45,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="card gedf-card" style="width: 100%%;">
+<div class="card gedf-card" style="width: 100%;">
     <div class="card-header">
         <ul class="nav nav-tabs card-header-tabs" id="myTab" role="tablist">
             <li class="nav-item" style="display: inline;">
@@ -48,8 +69,9 @@
                         <div class="h5 m-0"> {{user.first_name}} {{user.last_name}} </div>    
                     </div>
                     <div class="card-body">
-                        <button class="btn btn-outline-success my-2 my-sm-0" 
-                            id = "unmakeButton"> Make friendship </button>
+                        <button class="btn btn-outline-success my-2 my-sm-0 inviteButtons" 
+                            id = '{{user.id}}'> 
+                            Make friendship </button>
                     </div>
                     {% endfor %}
                     {% endif %}

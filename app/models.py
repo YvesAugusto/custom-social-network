@@ -1,5 +1,22 @@
 from app import db, app
 import flask_whooshalchemyplus as wa
+
+from sqlalchemy.ext.mutable import Mutable
+
+class MutableList(Mutable, list):
+    def append(self, value):
+        list.append(self, value)
+        self.changed()
+
+    @classmethod
+    def coerce(cls, key, value):
+        if not isinstance(value, MutableList):
+            if isinstance(value, list):
+                return MutableList(value)
+            return Mutable.coerce(key, value)
+        else:
+            return value
+
 class Usuario(db.Model):
     __searchable__ = ['first_name', 'last_name', 'id', 'email']
     __tablename__  = 'usuario'
@@ -12,9 +29,9 @@ class Usuario(db.Model):
     state = db.Column(db.String(32))
     password = db.Column(db.String(64))
     # vetor com o id dos usuarios seguidos
-    seguindo = db.Column(db.ARRAY(db.Integer, dimensions = 1))
+    seguindo = db.Column(MutableList.as_mutable(db.ARRAY(db.Integer)))
     # vetor com o id dos seguidores
-    seguidores = db.Column(db.ARRAY(db.Integer, dimensions = 1))
+    seguidores = db.Column(MutableList.as_mutable(db.ARRAY(db.Integer)))
 
     def __init__(self, first_name, last_name, email,
                  sex, city, state, password):
@@ -25,6 +42,8 @@ class Usuario(db.Model):
         self.city = city
         self.state = state
         self.password = password
+        self.seguindo = []
+        self.seguidores = []
     
     def seguir(self, id):
         self.seguindo.append(id)

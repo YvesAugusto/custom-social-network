@@ -4,6 +4,18 @@ from flask import request, jsonify
 from .validators import *
 from .models import Usuario, Post, Timeline
 
+
+@app.route('/controller/<id>/inviteFriend', methods=['POST'])
+def inviteFriend(id):
+    asking_user = Usuario.query.filter_by(id=id).first()
+    print(asking_user.seguindo)
+    receiving_user = Usuario.query.filter_by(id=request.form['id']).first()
+    print(receiving_user)
+    asking_user.seguir(receiving_user.id)
+    db.session.commit()
+    print(asking_user.seguindo)
+    return {'error': 'followed'}
+
 @app.route('/view/posts/<id>')
 def get_user_timeline_posts(id):
     return 0
@@ -12,7 +24,6 @@ def get_user_timeline_posts(id):
 def make_post(id):
     content = request.form['content']
     title = request.form['title']
-    print(title)
     post = Post(user_id=id, title=title, content=content)
     db.session.add(post)
     db.session.commit()
