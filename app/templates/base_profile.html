@@ -35,7 +35,7 @@
             border-radius: 15px 15px 15px 15px;
         }
 
-        #notificatioButton{
+        .notDiv{
             float: left;
             position: relative;
             right: 400px;
@@ -50,17 +50,72 @@
             color: white;
         }
 
+        #notMenu{
+            display: inline;
+        }
+
+        .notification{
+            width: 200px;
+            height: 125px;
+        }
+
     </style>
 
     <script>
         $(document).ready(function(){
-            $("#dropdownButton").click(function(){
-                if ($(".dropdown-menu").css("display") == "none"){
-                    $(".dropdown-menu").css("display", "block");
-                } else if($(".dropdown-menu").css("display") == "block"){
-                    $(".dropdown-menu").css("display", "none");
+            const local_id = localStorage.getItem("id");
+            $("#dropdownButton").click(function(e){
+                if ($("#dropdown").css("display") == "none"){
+                    $("#dropdown").css("display", "block");
+                } else if($("#dropdown").css("display") == "block"){
+                    $("#dropdown").css("display", "none");
                 }
+                e.preventDefault();
             });
+
+            $("#notificationButton").click(function(e){
+                if ($("#notMenu").css("display") == "none"){
+                    $("#notMenu").css("display", "block");
+                }else if ($("#notMenu").css("display") == "block"){
+                    $("#notMenu").css("display", "none");
+                }
+                e.preventDefault();
+            })
+
+            $(".btn-outline-success").click(function(e){
+                var id_target = event.target.id;
+                alert(id_target);
+                $.ajax({
+                    data:{
+                        id: id_target,
+                        decision: 1
+                    },
+                    type: 'POST',
+                    url: '/controller/'+local_id+'/friendshipDecision'
+                }).done(function(response){
+                    alert(response.error);
+                    window.location.reload();
+                })
+                e.preventDefault();
+            });
+
+            $(".btn-outline-danger").click(function(e){
+                var id_target = event.target.id;
+                alert(id_target);
+                $.ajax({
+                    data:{
+                        id: id_target,
+                        decision: 0
+                    },
+                    type: 'POST',
+                    url: '/controller/'+local_id+'/friendshipDecision'
+                }).done(function(response){
+                    alert(response.error);
+                    window.location.reload();
+                })
+                e.preventDefault();
+            });
+
         });
 
     </script>
@@ -75,16 +130,43 @@
             <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownButton">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <div class="dropdown-menu" id="dropdown" aria-labelledby="dropdownMenuButton">
                 <a class="dropdown-item" href="#">Home</a>
                 <a class="dropdown-item" href="#">Friendlist</a>
                 <a class="dropdown-item" href="#">Configurations</a>
             </div>
         </div>
 
-        <button class="btn btn-secondary" type="button" id="notificatioButton">
-            <span class="iconify" data-icon="bi-alarm" data-inline="false"></span>
-        </button>
+        <div class = "notDiv">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="notificationButton">
+                <span class="iconify" data-icon="bi-alarm" data-inline="false"></span>
+            </button>
+            {% if form.notifications %}
+                <div class="dropdown-menu" id="notMenu" aria-labelledby="dropdownNotificationButton">
+                {% for notification in form.notifications %}
+                    <div class = "card gedf-card notification">
+                        <div class="card-header">
+                            {{notification.first_name}} {{notification.last_name}}
+                        </div>
+                        <div class="card-body">
+                            <form class="form-group">
+                                <button class="btn btn-outline-success my-2 my-sm-0" 
+                                id="acceptButton_{{notification.id}}"> 
+                                    Accept 
+                                </button>
+
+                                <button class="btn btn-outline-danger my-2 my-sm-0" 
+                                id="rejectButton_{{notification.id}}"> 
+                                    Reject 
+                                </button>
+                            </form>
+                        </div>
+
+                    </div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        </div>
 
         <form class="form-inline mt-3" id = 'searchBox'>
             <button class="btn btn-outline-success my-2 my-sm-0" 

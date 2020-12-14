@@ -1,5 +1,5 @@
 from app import db, app
-import flask_whooshalchemyplus as wa
+#import flask_whooshalchemyplus as wa
 
 from sqlalchemy.ext.mutable import Mutable
 
@@ -32,6 +32,9 @@ class Usuario(db.Model):
     seguindo = db.Column(MutableList.as_mutable(db.ARRAY(db.Integer)))
     # vetor com o id dos seguidores
     seguidores = db.Column(MutableList.as_mutable(db.ARRAY(db.Integer)))
+    # vetor com as notificações de amizade que vão aparecer na página principal
+    # cada elemento do vetor é o id da pessoa que enviou a solicitação
+    invite_notifications = db.Column(MutableList.as_mutable(db.ARRAY(db.Integer)))
 
     def __init__(self, first_name, last_name, email,
                  sex, city, state, password):
@@ -44,7 +47,8 @@ class Usuario(db.Model):
         self.password = password
         self.seguindo = []
         self.seguidores = []
-    
+        self.invite_notifications = []
+
     def seguir(self, id):
         self.seguindo.append(id)
 
@@ -78,7 +82,7 @@ class Post(db.Model):
     def comment(self, commentary):
         self.comments.append(commentary)
 
-wa.whoosh_index(app, Usuario)
+#wa.whoosh_index(app, Usuario)
 
 class Timeline(db.Model):
     __tablename__='timeline'

@@ -41,22 +41,61 @@ def deleteFriend(id):
 
     return {'error': 'unfollowed'}
 
+@app.route('/controller/<id>/friendshipDecision', methods=['POST'])
+def friendship_decision(id):
+
+    # query to get the current user logged on the social net 
+    current_user = Usuario.query.filter_by(id=id).first()
+    print(current_user.first_name, id)
+    # transform the string 'decision_id' on a integer 'id' to search on the tables
+    id_target = int(request.form['id'].split('_')[-1])
+    # query user that will be removed from friendlist
+    asking_user = Usuario.query.filter_by(id=id_target).first()
+    # get the decision variable from the requisition. 
+    decision = int(request.form['decision'])
+
+    # if is true, accept user to friendlist
+    if decision == 1:
+        current_user.seguir(asking_user.id)
+        current_user.receber_seguidor(asking_user.id)
+        asking_user.seguir(current_user.id)
+        asking_user.receber_seguidor(current_user.id)
+        # then remove notification from notifications vector
+        notification_vector = current_user.invite_notifications.copy()
+        notification_vector.remove(id_target)
+        current_user.invite_notifications = notification_vector
+        # submit to database
+        db.session.add(current_user)
+        db.session.add(asking_user)
+        db.session.commit()
+        db.session.close()
+        return {'error': 'Friendship accepted'}
+
+    # if false, simply remove remove notification from notifications vector
+    else:
+        notification_vector = current_user.invite_notifications.copy()
+        notification_vector.remove(id_target)
+        current_user.invite_notifications = notification_vector
+        db.session.add(current_user)
+        db.session.commit()
+        db.session.close()
+        return {'error':'Friendship rejected'}
+
+
 @app.route('/controller/<id>/inviteFriend', methods=['POST'])
 def inviteFriend(id):
     asking_user = Usuario.query.filter_by(id=id).first()
     id_target = int(request.form['id'].split('_')[-1])
     receiving_user = Usuario.query.filter_by(id=id_target).first()
-    print(f'asking user following: {asking_user.seguindo}, and being followed by: {asking_user.seguidores}')
-    asking_user.seguir(receiving_user.id)
-    asking_user.receber_seguidor(receiving_user.id)
-    print(f'asking user following: {asking_user.seguindo}, and being followed by: {asking_user.seguidores}')
-    print()
-    print(f'receiving user following: {receiving_user.seguindo}, and being followed by: {receiving_user.seguidores}')
-    receiving_user.seguir(asking_user.id)
-    receiving_user.receber_seguidor(asking_user.id)
-    print(f'receiving user following: {receiving_user.seguindo}, and being followed by: {receiving_user.seguidores}')
+    # manually appends friendship invitationt to user's invite vector
+    notification_vector = receiving_user.invite_notifications.copy()
+    notification_vector.append(int(id))
+    receiving_user.invite_notifications = notification_vector
+    # submit to database
+    db.session.add(receiving_user)
     db.session.commit()
     db.session.close()
+
     return {'error': 'followed'}
 
 @app.route('/view/posts/<id>')
@@ -92,10 +131,17 @@ def login_controller():
 @app.route('/profile/<id>', methods=['POST', 'GET'])
 def profile(id):
     usuario = Usuario.query.filter_by(id=id).first()
-    posts= Post.query.filter_by(user_id=usuario.id).all()
+    notifications = usuario.invite_notifications
+    if notifications:
+        asking_users = [Usuario.query.filter_by(id=notifications[i]).first() 
+                    for i in range(len(notifications))]
+    else:
+        asking_users = None
+    posts = Post.query.filter_by(user_id=usuario.id).all()
     return render_template("timeline.html", posts=posts,
                             form={'username': usuario.first_name + " " + usuario.last_name,
-                                'nickname': usuario.first_name + usuario.last_name})
+                                'nickname': usuario.first_name + usuario.last_name,
+                                'notifications': asking_users})
 
 @app.route('/enroll/user', methods=['GET', 'POST'])
 def enroll_user():
