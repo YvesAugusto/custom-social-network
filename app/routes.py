@@ -4,16 +4,59 @@ from flask import request, jsonify
 from .validators import *
 from .models import Usuario, Post, Timeline
 
+@app.route('/controller/<id>/deleteFriend', methods=['POST'])
+def deleteFriend(id):
+    # query to get the current user logged on the social net
+    current_user = Usuario.query.filter_by(id=id).first()
+    # transform the string 'unmake_id' on a integer 'id' to search on the tables
+    id_target = int(request.form['id'].split('_')[-1])
+    # query user that will be removed from friendlist
+    user_to_be_removed_from_friendlist = Usuario.query.filter_by(id=id_target).first()
+    # manually set the new following vector
+    seguindo = current_user.seguindo.copy()
+    seguindo.remove(user_to_be_removed_from_friendlist.id)
+    current_user.seguindo = seguindo
+    # manually set the new followers vector
+    seguidores = current_user.seguidores.copy()
+    seguidores.remove(user_to_be_removed_from_friendlist.id)
+    current_user.seguidores = seguidores
+    db.session.add(current_user)
+
+    # # --------------------------------------------
+
+    # manually set the new following vector
+    seguindo = user_to_be_removed_from_friendlist.seguindo.copy()
+    seguindo.remove(current_user.id)
+    user_to_be_removed_from_friendlist.seguindo = seguindo
+    # manually set the new followers vector
+    seguidores = user_to_be_removed_from_friendlist.seguidores.copy()
+    seguidores.remove(current_user.id)
+    user_to_be_removed_from_friendlist.seguidores = seguidores
+    db.session.add(user_to_be_removed_from_friendlist)
+
+    # # ---------------------------------------------
+
+    db.session.commit()
+    db.session.close()
+
+    return {'error': 'unfollowed'}
 
 @app.route('/controller/<id>/inviteFriend', methods=['POST'])
 def inviteFriend(id):
     asking_user = Usuario.query.filter_by(id=id).first()
-    print(asking_user.seguindo)
-    receiving_user = Usuario.query.filter_by(id=request.form['id']).first()
-    print(receiving_user)
+    id_target = int(request.form['id'].split('_')[-1])
+    receiving_user = Usuario.query.filter_by(id=id_target).first()
+    print(f'asking user following: {asking_user.seguindo}, and being followed by: {asking_user.seguidores}')
     asking_user.seguir(receiving_user.id)
+    asking_user.receber_seguidor(receiving_user.id)
+    print(f'asking user following: {asking_user.seguindo}, and being followed by: {asking_user.seguidores}')
+    print()
+    print(f'receiving user following: {receiving_user.seguindo}, and being followed by: {receiving_user.seguidores}')
+    receiving_user.seguir(asking_user.id)
+    receiving_user.receber_seguidor(asking_user.id)
+    print(f'receiving user following: {receiving_user.seguindo}, and being followed by: {receiving_user.seguidores}')
     db.session.commit()
-    print(asking_user.seguindo)
+    db.session.close()
     return {'error': 'followed'}
 
 @app.route('/view/posts/<id>')
@@ -81,12 +124,13 @@ def enroll_page():
 
 @app.route('/profile/<id>/search')
 def search(id):
+    usuario = Usuario.query.filter_by(id=id).first()
     if request.method == 'GET':
         usuarios = Usuario.query.filter_by(first_name=request.args.get('first_name')).all()
     else:
         usuarios = []
     form={'username':Usuario.query.filter_by(id=id).first().first_name,
-          'users': usuarios}
+          'users': usuarios, 'friends':usuario.seguindo}
     return render_template('search_page.html', form=form)
 
 @app.route('/views/<id>/usuario')
@@ -94,5 +138,4 @@ def view_usuario():
     usuarios = Post.query.whoosh_search(request.args.get('query')).all()
     form={'username':Usuario.query.filter_by(id=id).first().first_name,
           'users': usuarios}
-    print(usuarios)
     return render_template('search_page.html', form=form)

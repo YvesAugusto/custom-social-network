@@ -19,8 +19,6 @@
 
             $(".inviteButtons").click(function(event){
                 var id_target = event.target.id;
-                console.log(event.target.id);
-                alert(id_target);
                 $.ajax({
                     data: {
                         id: id_target,
@@ -29,7 +27,23 @@
                     url: '/controller/'+local_id+'/inviteFriend'
                 }).done(function(data){
                     if(data.error){
-                        alert(data.error);
+                        window.location.reload();
+                    }
+                });
+                event.preventDefault();
+            });
+
+            $(".deleteButtons").click(function(event){
+                var id_target = event.target.id;
+                $.ajax({
+                    data: {
+                        id: id_target,
+                    },
+                    type: 'POST',
+                    url: '/controller/'+local_id+'/deleteFriend'
+                }).done(function(data){
+                    if(data.error){
+                        window.location.reload();
                     }
                 });
                 event.preventDefault();
@@ -65,14 +79,24 @@
                 <div id = "searchDiv">
                     {% if form.users %}
                     {% for user in form.users %}
-                    <div class="card-header"> 
-                        <div class="h5 m-0"> {{user.first_name}} {{user.last_name}} </div>    
-                    </div>
-                    <div class="card-body">
-                        <button class="btn btn-outline-success my-2 my-sm-0 inviteButtons" 
-                            id = '{{user.id}}'> 
-                            Make friendship </button>
-                    </div>
+
+                        <div class="card-header"> 
+                            <div class="h5 m-0"> {{user.first_name}} {{user.last_name}} </div>    
+                        </div>
+                        {% if user.id in form.friends %}
+                        <div class="card-body">
+                            <button class="btn btn-outline-danger my-2 my-sm-0 deleteButtons" 
+                                id = 'unmake_{{user.id}}'> 
+                                Unmake friendship </button>
+                        </div>
+                        {% else %}
+                        <div class="card-body">
+                            <button class="btn btn-outline-success my-2 my-sm-0 inviteButtons" 
+                                id = 'make_{{user.id}}'> 
+                                Make friendship </button>
+                        </div>
+                        {% endif %}
+
                     {% endfor %}
                     {% endif %}
                     

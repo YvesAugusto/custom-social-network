@@ -51,6 +51,12 @@ class Usuario(db.Model):
     def receber_seguidor(self, id):
         self.seguidores.append(id)
 
+    def unfollow(self, id):
+        self.seguindo.remove(id)
+    
+    def be_unfollowed(self, id):
+        self.seguidores.remove(id)
+
 class Post(db.Model):
     __tablename__='post'
     id = db.Column(db.Integer, primary_key=True)
