@@ -3,6 +3,7 @@ from flask import render_template, redirect, url_for
 from flask import request, jsonify
 from .validators import *
 from .models import Usuario, Post, Timeline
+import numpy as np
 
 @app.route('/controller/<id>/deleteFriend', methods=['POST'])
 def deleteFriend(id):
@@ -138,7 +139,22 @@ def profile(id):
     else:
         asking_users = None
     posts = Post.query.filter_by(user_id=usuario.id).all()
-    return render_template("timeline.html", posts=posts,
+    users_that_will_be_seen = usuario.seguindo
+    users_that_will_be_seen += [int(id)]
+
+    posts_that_will_be_seen = [
+                                Post.query.filter_by(user_id=users_that_will_be_seen[i]).all()
+                                for i in range(len(users_that_will_be_seen))
+                              ]
+
+    
+    posts_that_will_be_seen=np.concatenate(posts_that_will_be_seen)
+    posts_that_will_be_seen = [
+        {'showed_user': Usuario.query.filter_by(id=post.user_id).first(), 'post': post}
+        for post in posts_that_will_be_seen
+    ]
+    print(posts_that_will_be_seen)
+    return render_template("timeline.html", posts=posts_that_will_be_seen,
                             form={'username': usuario.first_name + " " + usuario.last_name,
                                 'nickname': usuario.first_name + usuario.last_name,
                                 'notifications': asking_users})

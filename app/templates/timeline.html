@@ -3,10 +3,12 @@
 {% block head %}
 
     <style>
+
         ul.timeline {
             list-style-type: none;
             position: relative;
         }
+
         ul.timeline:before {
             content: ' ';
             background: #d4d9df;
@@ -17,10 +19,12 @@
             height: 100%;
             z-index: 400;
         }
+
         ul.timeline > li {
             margin: 20px 0;
             padding-left: 20px;
         }
+
         ul.timeline > li:before {
             content: ' ';
             background: white;
@@ -41,6 +45,7 @@
         .row_timeline{
             align-items: center;
         }
+
     </style>
 
     <script>
@@ -68,8 +73,6 @@
                 event.preventDefault();
             });
         });
-
-
 
     </script>
 
@@ -121,8 +124,8 @@
                                 <img class="rounded-circle" width="45" src="" alt="">
                             </div>
                             <div class="ml-2">
-                                <div class="h5 m-0">@{{form.nickname}}</div>
-                                <div class="h7 text-muted">{{form.username}}</div>
+                                <div class="h5 m-0">@{{post.showed_user.first_name}}{{post.showed_user.last_name}}</div>
+                                <div class="h7 text-muted">{{post.showed_user.first_name}} {{post.showed_user.last_name}}</div>
                             </div>
                         </div>
                         <div>
@@ -145,11 +148,11 @@
                 <div class="card-body">
                     <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i>10 min ago</div>
                     <a class="card-link" href="#">
-                        <h5 class="card-title">{{post.title}}</h5>
+                        <h5 class="card-title">{{post.post.title}}</h5>
                     </a>
 
                     <p class="card-text">
-                        {{post.content}}
+                        {{post.post.content}}
                     </p>
                 </div>
                 <div class="card-footer">

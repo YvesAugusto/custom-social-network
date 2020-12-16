@@ -10,5 +10,7 @@ Social network web app for software engineering discipline project
 ### Post panel
 ![timeline](https://user-images.githubusercontent.com/53539227/101841994-de0aa380-3b25-11eb-93e3-6a8d19ca5936.png)
 ### Timeline panel
-![posts](https://user-images.githubusercontent.com/53539227/101841995-df3bd080-3b25-11eb-874e-0f98e785cfc1.png)
-### And more coming...
+![Captura de tela de 2020-12-16 10-27-40](https://user-images.githubusercontent.com/53539227/102354480-65726f80-3f89-11eb-936b-fcbf4f2c200c.png)
+### Friendship solicitation
+![Captura de tela de 2020-12-16 10-25-33](https://user-images.githubusercontent.com/53539227/102354345-33f9a400-3f89-11eb-8148-825418c5c14c.png)
+
