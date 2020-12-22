@@ -82,6 +82,10 @@
                 e.preventDefault();
             })
 
+            $('#chatButton').click(function(e){
+                window.location.href='/profile/'+local_id+'/chats';
+            })
+
             $(".btn-outline-success").click(function(e){
                 var id_target = event.target.id;
                 alert(id_target);
@@ -132,6 +136,7 @@
             </button>
             <div class="dropdown-menu" id="dropdown" aria-labelledby="dropdownMenuButton">
                 <a class="dropdown-item" href="#">Home</a>
+                <a class="dropdown-item" id = "chatButton" >Chat</a>
                 <a class="dropdown-item" href="#">Friendlist</a>
                 <a class="dropdown-item" href="#">Configurations</a>
             </div>

@@ -2,7 +2,7 @@ from app import app, db
 from flask import render_template, redirect, url_for
 from flask import request, jsonify
 from .validators import *
-from .models import Usuario, Post, Timeline
+from .models import Usuario, Post, Chat, Message
 import numpy as np
 
 @app.route('/controller/<id>/deleteFriend', methods=['POST'])
@@ -153,7 +153,6 @@ def profile(id):
         {'showed_user': Usuario.query.filter_by(id=post.user_id).first(), 'post': post}
         for post in posts_that_will_be_seen
     ]
-    print(posts_that_will_be_seen)
     return render_template("timeline.html", posts=posts_that_will_be_seen,
                             form={'username': usuario.first_name + " " + usuario.last_name,
                                 'nickname': usuario.first_name + usuario.last_name,
@@ -201,3 +200,30 @@ def view_usuario():
     form={'username':Usuario.query.filter_by(id=id).first().first_name,
           'users': usuarios}
     return render_template('search_page.html', form=form)
+
+@app.route('/profile/<id>/chats', methods=['GET'])
+def chats(id):
+    user = Usuario.query.filter_by(id=id).first()
+    if request.method == 'GET':
+        x=request.args.get('first_name')
+        if x:
+            friends = Usuario.query.filter_by(first_name=x).all()
+            friends = [friends[i] for i in range(len(friends)) if friends[i].id in user.seguindo]
+        else:
+            friends = [Usuario.query.filter_by(id=user.seguindo[i]).first() for i in range(len(user.seguindo))]
+        
+        chats = []
+
+        
+    else:
+        friends = []
+
+    
+        chats = Chat.query.filter_by(user_id_0=id).all()
+        chats = [
+                {'user':Usuario.query.filter_by(id=chat.user_id_1), 
+                'chat_box': chat}
+                for idc, chat in enumerate(chats)
+                ]
+    return render_template('chat.html', chats = chats, friends=friends,
+                            form={'username':user.first_name})

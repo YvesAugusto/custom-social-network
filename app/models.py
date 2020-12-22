@@ -67,7 +67,6 @@ class Post(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('usuario.id')) # usuario que criou o post
     title = db.Column(db.String(32))
     content = db.Column(db.String(512))
-    comments = db.Column(db.ARRAY(db.String(128), dimensions = 1))
     likes = db.Column(db.Integer)
 
     def __init__(self, user_id, title, content):
@@ -78,27 +77,47 @@ class Post(db.Model):
 
     def like(self):
         self.likes+=1
-    
-    def comment(self, commentary):
-        self.comments.append(commentary)
 
-#wa.whoosh_index(app, Usuario)
 
-class Timeline(db.Model):
-    __tablename__='timeline'
-    # id de um post qualquer
+class Commentary(db.Model):
+    __tablename__='commentary'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('usuario.id'))
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
-    # id do usuario que vai receber o post na timeline
-    receiver_id = db.Column(db.Integer, db.ForeignKey('usuario.id'))
+    content = db.Column(db.String(512))
+    
+    def __init__(self, user_id, post_id, content):
+        self.user_id = user_id
+        self.post_id = post_id
+        self.content = content
 
+class Chat(db.Model):
+    __tablename__='chat'
+    user_id_0 = db.Column(db.Integer, db.ForeignKey('usuario.id'))
+    user_id_1 = db.Column(db.Integer, db.ForeignKey('usuario.id'))
     __table_args__=(
         db.PrimaryKeyConstraint(
-            post_id, receiver_id
+            user_id_0, user_id_1
         ),
     )
 
-    def __init__(self, post_id, receiver_id):
-        self.post_id = post_id
-        self.receiver_id = receiver_id
+    def __init__(self, user_0, user_1):
+        self.user_id_0 = user_0
+        self.user_id_1 = user_1
+
+class Message(db.Model):
+    __tablename__ = 'message'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('usuario.id'))
+    chat_id = db.Column(db.Integer, db.ForeignKey('chat.id'))
+    content = db.Column(db.String(512))
+
+    def __init__(self, user_id, chat_id, content):
+        self.user_id = user_id
+        self.chat_id = chat_id
+        self.content = content
+    
+
+#wa.whoosh_index(app, Usuario)
 
 db.create_all()
